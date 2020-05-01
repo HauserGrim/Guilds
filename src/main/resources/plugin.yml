@@ -60,7 +60,7 @@ permissions:
       guilds.command.war.challenge: true
       guilds.command.war.deny: true
       guilds.command.war.join: true
-    default: true
+    default: false
   guilds.group.admin:
     children:
       guilds.command.admin: true
