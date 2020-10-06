@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 // This is a temp class until I can sort a bunch of shit out
 public class GuiUtils {
 
-    public static Set<Material> problemItems = new HashSet<>(Arrays.asList(XMaterial.REDSTONE_TORCH.parseMaterial(), XMaterial.RED_BED.parseMaterial()));
+    public static final Set<Material> problemItems = new HashSet<>(Arrays.asList(XMaterial.REDSTONE_TORCH.parseMaterial(), XMaterial.RED_BED.parseMaterial()));
 
     public static ItemStack createItem(String material, String name, List<String> lore) {
         Optional<XMaterial> tempMaterial = XMaterial.matchXMaterial(material);

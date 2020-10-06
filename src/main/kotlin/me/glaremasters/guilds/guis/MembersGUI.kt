@@ -44,7 +44,7 @@ import java.util.Date
 
 class MembersGUI(private val guilds: Guilds, private val settingsManager: SettingsManager, private val guildHandler: GuildHandler) {
 
-    fun get(guild: Guild): Gui {
+    fun get(guild: Guild, player: Player): Gui {
         val name = settingsManager.getProperty(GuildInfoMemberSettings.GUI_NAME).replace("{name}", guild.name)
         val gui = GuiBuilder(guilds).setName(name).setRows(6).disableGlobalClicking().build()
 
@@ -52,10 +52,10 @@ class MembersGUI(private val guilds: Guilds, private val settingsManager: Settin
             event.isCancelled = true
             val player = event.whoClicked as Player
             val playerGuild = guildHandler.getGuild(player)
-            if (playerGuild == null) guilds.guiHandler.list.get.open(event.whoClicked) else guilds.guiHandler.info.get(playerGuild, player).open(event.whoClicked)
+            if (playerGuild == null) guilds.guiHandler.list.get(player).open(event.whoClicked) else guilds.guiHandler.info.get(playerGuild, player).open(event.whoClicked)
         }
 
-        addItems(gui, guild)
+        addItems(gui, guild, player)
         addBackground(gui)
         return gui
     }
@@ -63,10 +63,10 @@ class MembersGUI(private val guilds: Guilds, private val settingsManager: Settin
     /**
      * Create the regular items that will be on the GUI
      *
-     * @param pane  the pane to be added to
+     * @param pane the pane to be added to
      * @param guild the guild of the player
      */
-    private fun addItems(gui: Gui, guild: Guild) {
+    private fun addItems(gui: Gui, guild: Guild, player: Player) {
         val members = guild.members
 
         when (settingsManager.getProperty(GuildInfoMemberSettings.SORT_ORDER).toUpperCase()) {
@@ -80,7 +80,13 @@ class MembersGUI(private val guilds: Guilds, private val settingsManager: Settin
         val lore = settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_LORE)
 
         members.forEach { member ->
-            val status = if (member.isOnline) settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_ONLINE) else settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_OFFLINE)
+            val online = if (member.isOnline) {
+                val user = member.asPlayer
+                user != null && player.canSee(user)
+            } else {
+                false
+            }
+            val status = if (online) settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_ONLINE) else settingsManager.getProperty(GuildInfoMemberSettings.MEMBERS_OFFLINE)
             val role = guildHandler.getGuildRole(member.role.level)
             val name = member.name
             val updated = mutableListOf<String>()
@@ -101,5 +107,4 @@ class MembersGUI(private val guilds: Guilds, private val settingsManager: Settin
             gui.addItem(item)
         }
     }
-
 }

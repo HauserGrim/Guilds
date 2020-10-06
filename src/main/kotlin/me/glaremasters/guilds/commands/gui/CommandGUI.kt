@@ -36,6 +36,7 @@ import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.exceptions.InvalidTierException
 import me.glaremasters.guilds.guild.Guild
 import me.glaremasters.guilds.utils.Constants
+import me.mattstudios.mfgui.gui.guis.PaginatedGui
 import org.bukkit.entity.Player
 
 @CommandAlias("%guilds")
@@ -68,7 +69,12 @@ internal class CommandGUI : BaseCommand() {
     @Syntax("")
     @CommandPermission(Constants.BASE_PERM + "list")
     fun list(player: Player) {
-        guilds.guiHandler.list.get.open(player)
+        val chain = Guilds.newChain<Any>()
+        chain.async {
+            chain.setTaskData("data", guilds.guiHandler.list.get(player))
+        } .sync {
+            (chain.getTaskData<Any>("data") as PaginatedGui).open(player)
+        }.execute()
     }
 
     @Subcommand("members")
@@ -76,7 +82,7 @@ internal class CommandGUI : BaseCommand() {
     @Syntax("")
     @CommandPermission(Constants.BASE_PERM + "members")
     fun members(player: Player, guild: Guild) {
-        guilds.guiHandler.members.get(guild).open(player)
+        guilds.guiHandler.members.get(guild, player).open(player)
     }
 
     @Subcommand("vault")

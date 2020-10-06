@@ -20,5 +20,4 @@ class GuildMember(val uuid: UUID, var role: GuildRole) {
 
     val name: String?
         get() = asOfflinePlayer.name
-
 }

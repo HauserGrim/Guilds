@@ -25,13 +25,16 @@
 package me.glaremasters.guilds.listeners
 
 import ch.jalu.configme.SettingsManager
+import java.io.IOException
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.configuration.sections.GuildSettings
 import me.glaremasters.guilds.configuration.sections.PluginSettings
 import me.glaremasters.guilds.guild.GuildHandler
 import me.glaremasters.guilds.messages.Messages
+import me.glaremasters.guilds.utils.JSONMessage
 import me.glaremasters.guilds.utils.StringUtils
-import me.rayzr522.jsonmessage.JSONMessage
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -41,9 +44,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import java.io.IOException
-import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 class PlayerListener(private val guilds: Guilds, private val settingsManager: SettingsManager, private val guildHandler: GuildHandler, private val permission: Permission) : Listener {
     private val informed = mutableSetOf<UUID>()
@@ -105,7 +105,7 @@ class PlayerListener(private val guilds: Guilds, private val settingsManager: Se
         guild.updateGuildSkull(player, settingsManager)
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     fun AsyncPlayerChatEvent.onChat() {
         val guild = guildHandler.getGuild(player) ?: return
 

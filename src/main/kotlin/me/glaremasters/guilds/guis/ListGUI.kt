@@ -25,6 +25,7 @@
 package me.glaremasters.guilds.guis
 
 import ch.jalu.configme.SettingsManager
+import java.text.SimpleDateFormat
 import me.glaremasters.guilds.Guilds
 import me.glaremasters.guilds.configuration.sections.GuildInfoSettings
 import me.glaremasters.guilds.configuration.sections.GuildListSettings
@@ -37,13 +38,12 @@ import me.glaremasters.guilds.utils.GuiUtils
 import me.glaremasters.guilds.utils.StringUtils
 import me.mattstudios.mfgui.gui.guis.GuiItem
 import me.mattstudios.mfgui.gui.guis.PaginatedGui
-import java.text.SimpleDateFormat
+import org.bukkit.entity.Player
 
 class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsManager, private val guildHandler: GuildHandler) {
     private val items: MutableList<GuiItem>
 
-    val get: PaginatedGui
-        get() {
+    fun get(player: Player): PaginatedGui {
             val name = settingsManager.getProperty(GuildListSettings.GUILD_LIST_NAME)
             val gui = PaginatedGui(guilds, 6, 45, StringUtils.color(name))
 
@@ -51,7 +51,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
                 event.isCancelled = true
             }
 
-            createListItems(gui)
+            createListItems(gui, player)
             addBottom(gui)
             createButtons(gui)
 
@@ -64,7 +64,6 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
             gui.nextPage()
         }
 
-
         val back = GuiItem(GuiUtils.createItem(settingsManager.getProperty(GuildListSettings.GUILD_LIST_PREVIOUS_PAGE_ITEM), settingsManager.getProperty(GuildListSettings.GUILD_LIST_PREVIOUS_PAGE_ITEM_NAME), emptyList()))
         back.setAction {
             gui.prevPage()
@@ -74,7 +73,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
         gui.setItem(6, 1, back)
     }
 
-    private fun createListItems(gui: PaginatedGui) {
+    private fun createListItems(gui: PaginatedGui, player: Player) {
         val guilds = guildHandler.guilds
 
         when (settingsManager.getProperty(GuildListSettings.GUILD_LIST_SORT).toUpperCase()) {
@@ -89,7 +88,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
         }
 
         guilds.forEach { guild ->
-            setListItem(guild)
+            setListItem(guild, player)
         }
 
         items.forEach { item ->
@@ -99,7 +98,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
         items.clear()
     }
 
-    private fun setListItem(guild: Guild) {
+    private fun setListItem(guild: Guild, player: Player) {
         val defaultUrl = settingsManager.getProperty(GuildListSettings.GUILD_LIST_HEAD_DEFAULT_URL)
         val useDefaultUrl = settingsManager.getProperty(GuildListSettings.USE_DEFAULT_TEXTURE)
         val item = if (!useDefaultUrl) guild.skull else GuildSkull(defaultUrl).itemStack
@@ -119,7 +118,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
 
         guiItem.setAction { event ->
             event.isCancelled = true
-            guilds.guiHandler.members.get(guild).open(event.whoClicked)
+            guilds.guiHandler.members.get(guild, player).open(event.whoClicked)
         }
 
         items.add(guiItem)
@@ -129,7 +128,7 @@ class ListGUI(private val guilds: Guilds, private val settingsManager: SettingsM
      * Update lore with replacements
      *
      * @param guild the guild being edited
-     * @param lore  the lore to change
+     * @param lore the lore to change
      * @return updated lore
      */
     private fun updatedLore(guild: Guild, lore: List<String>): List<String> {
