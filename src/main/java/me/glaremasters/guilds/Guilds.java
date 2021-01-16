@@ -30,7 +30,6 @@ import co.aikar.taskchain.TaskChain;
 import co.aikar.taskchain.TaskChainFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.bristermitten.pdm.PDMBuilder;
 import me.bristermitten.pdm.PluginDependencyManager;
 import me.glaremasters.guilds.acf.ACFHandler;
 import me.glaremasters.guilds.actions.ActionHandler;
@@ -59,6 +58,7 @@ import me.glaremasters.guilds.updater.UpdateChecker;
 import me.glaremasters.guilds.utils.LanguageUpdater;
 import me.glaremasters.guilds.utils.LoggingUtils;
 import me.glaremasters.guilds.utils.StringUtils;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -86,6 +86,7 @@ public final class Guilds extends JavaPlugin {
     private GUIHandler guiHandler;
     private Economy economy;
     private Permission permissions;
+    private BukkitAudiences adventure;
 
     public static Gson getGson() {
         return gson;
@@ -132,7 +133,7 @@ public final class Guilds extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        final PluginDependencyManager pdm = new PDMBuilder(this).build();
+        final PluginDependencyManager pdm = PluginDependencyManager.of(this);
         pdm.loadAllDependencies().join();
     }
 
@@ -148,6 +149,8 @@ public final class Guilds extends JavaPlugin {
         }
 
         gson = new GsonBuilder().setPrettyPrinting().create();
+
+        this.adventure = BukkitAudiences.create(this);
 
         setupEconomy();
         setupPermissions();
@@ -360,5 +363,9 @@ public final class Guilds extends JavaPlugin {
 
     public Permission getPermissions() {
         return this.permissions;
+    }
+
+    public BukkitAudiences getAdventure() {
+        return adventure;
     }
 }
