@@ -5,13 +5,13 @@
 plugins {
     id "java"
     id "maven-publish"
-    id "org.jetbrains.kotlin.jvm" version "1.4.21"
-    id "me.bristermitten.pdm" version "0.0.30"
+    id "org.jetbrains.kotlin.jvm" version "1.4.32"
+    id "me.bristermitten.pdm" version "0.0.33"
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 group = "me.glaremasters"
-version = "3.5.5.6"
+version = "3.5.5.7"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 ext {
@@ -76,7 +76,7 @@ dependencies {
     implementation("co.aikar:acf-paper:0.5.0-SNAPSHOT")
 
     // Bstats Data Collecting
-    implementation("org.bstats:bstats-bukkit:1.7")
+    implementation("org.bstats:bstats-bukkit:2.2.1")
 
     // Taskchain Scheduling
     implementation("co.aikar:taskchain-bukkit:3.7.2")
@@ -91,7 +91,7 @@ dependencies {
     implementation("com.dumptruckman.minecraft:JsonConfiguration:1.1")
 
     // Cross-Version Support
-    implementation("com.github.cryptomorin:XSeries:7.8.0")
+    implementation("com.github.cryptomorin:XSeries:7.9.1.1")
 
     // Adventure
     implementation ("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
@@ -144,23 +144,23 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
 }
 
-publishing {
-    repositories {
-        maven {
-            name 'glare'
-            url "https://repo.glaremasters.me/repository/guilds/"
-            credentials {
-                username guildUser
-                password guildPass
-            }
-        }
-    }
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
+//publishing {
+//    repositories {
+//        maven {
+//            name 'glare'
+//            url "https://repo.glaremasters.me/repository/guilds/"
+//            credentials {
+//                username guildUser
+//                password guildPass
+//            }
+//        }
+//    }
+//    publications {
+//        maven(MavenPublication) {
+//            from(components.java)
+//        }
+//    }
+//}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -169,9 +169,7 @@ tasks.withType(JavaCompile) {
 import org.apache.tools.ant.filters.ReplaceTokens
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
+    filter ReplaceTokens, tokens: [version: version]
 }
 
 shadowJar.dependsOn project.tasks.getByName('pdm')
