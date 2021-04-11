@@ -144,6 +144,24 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8
 }
 
+publishing {
+    repositories {
+        maven {
+            name 'glare'
+            url "https://repo.glaremasters.me/repository/guilds/"
+            credentials {
+                username guildUser
+                password guildPass
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
