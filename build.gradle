@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.glaremasters"
-version = "3.5.5.7"
+version = "3.5.5.9-DEV"
 sourceCompatibility = JavaVersion.VERSION_1_8
 
 ext {
@@ -27,7 +27,7 @@ repositories {
             includeGroup("org.bukkit")
         }
     }
-    
+
     maven {
         url = "https://oss.sonatype.org/content/groups/public/"
     }
@@ -103,10 +103,10 @@ dependencies {
     compileOnly("net.milkbowl:vault:1.7")
 
     // Database Stuff
-    implementation("com.zaxxer:HikariCP:3.3.1")
+    implementation("com.zaxxer:HikariCP:4.0.3")
     implementation("org.jdbi:jdbi3-core:3.8.2")
     implementation("org.jdbi:jdbi3-sqlobject:3.8.2")
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.4.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.7.2")
 
     // Logger
     implementation("org.slf4j:slf4j-api:1.7.25")
