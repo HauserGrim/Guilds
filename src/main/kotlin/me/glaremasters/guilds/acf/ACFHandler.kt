@@ -65,6 +65,7 @@ class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCo
         commandManager.commandReplacements.addReplacement("syntax", plugin.settingsHandler.mainConf.getProperty(PluginSettings.SYNTAX_NAME))
 
         loadCommands()
+        loadCompletionCache()
     }
 
     fun loadLang() {
@@ -141,13 +142,13 @@ class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCo
         commandManager.commandCompletions.registerCompletion("languages") { languages.sorted() }
         commandManager.commandCompletions.registerStaticCompletion("sources") { listOf("JSON", "MYSQL", "SQLITE", "MARIADB") }
 
-        commandManager.commandCompletions.registerCompletion("members") { c ->
-            val guild = guildHandler.getGuild(c.player) ?: return@registerCompletion emptyList()
-            guild.members.mapNotNull { it.asOfflinePlayer.name }
+        commandManager.commandCompletions.registerAsyncCompletion("members") { c ->
+            val guild = guildHandler.getGuild(c.player) ?: return@registerAsyncCompletion emptyList()
+            guild.members.mapNotNull { guildHandler.lookupCache[it.uuid] ?: it.name }
         }
-        commandManager.commandCompletions.registerCompletion("members-admin") { c ->
-            val guild = c.getContextValue(Guild::class.java, 1) ?: return@registerCompletion null
-            guild.members.mapNotNull { it.asOfflinePlayer.name }
+        commandManager.commandCompletions.registerAsyncCompletion("members-admin") { c ->
+            val guild = c.getContextValue(Guild::class.java, 1) ?: return@registerAsyncCompletion emptyList()
+            guild.members.mapNotNull { guildHandler.lookupCache[it.uuid] ?: it.name }
         }
         commandManager.commandCompletions.registerCompletion("allyInvites") { c ->
             val guild = guildHandler.getGuild(c.player) ?: return@registerCompletion null
@@ -184,6 +185,16 @@ class ACFHandler(private val plugin: Guilds, private val commandManager: PaperCo
         ZISScanner().getClasses(Guilds::class.java, "me.glaremasters.guilds.commands").asSequence()
                 .filter { BaseCommand::class.java.isAssignableFrom(it) }
                 .forEach { commandManager.registerCommand(it.newInstance() as BaseCommand) }
+    }
+
+    private fun loadCompletionCache() {
+        val handler = plugin.guildHandler
+
+        handler.guilds.forEach { guild ->
+            guild.members.filterNotNull().forEach { member ->
+                handler.lookupCache.putIfAbsent(member.uuid, member.name)
+            }
+        }
     }
 
     private fun loadDI() {
