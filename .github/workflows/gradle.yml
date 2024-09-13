@@ -22,3 +22,8 @@ jobs:
       uses: gradle/gradle-build-action@v3
     - name: Build with Gradle
       run: ./gradlew build
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Guilds
+        path: build/libs/
