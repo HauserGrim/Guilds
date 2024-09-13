@@ -100,7 +100,7 @@ tasks {
         mitLicense()
 
         javaVersions {
-            target(8)
+            target(17)
         }
 
         github("guilds-plugin", "guilds") {
@@ -112,11 +112,13 @@ tasks {
 
     compileKotlin {
         kotlinOptions.javaParameters = true
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "17"
     }
 
     compileJava {
         options.compilerArgs = listOf("-parameters")
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     runServer {
@@ -134,7 +136,7 @@ tasks {
         fun relocates(vararg dependencies: String) {
             dependencies.forEach {
                 val split = it.split(".")
-                val name = split.last()
+                val name = split.getLast()
                 relocate(it, "me.glaremasters.guilds.libs.$name")
             }
         }
@@ -154,7 +156,7 @@ tasks {
         fun relocates(vararg dependencies: String) {
             dependencies.forEach {
                 val split = it.split(".")
-                val name = split.last()
+                val name = split.getLast()
                 relocate(it, "me.glaremasters.guilds.libs.$name")
             }
         }
